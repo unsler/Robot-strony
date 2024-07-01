@@ -1,0 +1,85 @@
+package org.firstinspires.ftc.robotcontroller.external.samples;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+@TeleOp(name="Drive_Test_Alelepszy", group="Linear Opmode")
+//@Disabled
+public class Drive_Test_Alelepszy extends LinearOpMode {
+
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftDrive1 = null;
+    private DcMotor leftDrive2 = null;
+    private DcMotor rightDrive1 = null;
+    private DcMotor rightDrive2 = null;
+
+    @Override
+     public void runOpMode() {
+         telemetry.addData("Status", "Inicjowanie🚀");
+         telemetry.update();
+
+        leftDrive1  = hardwareMap.get(DcMotor.class, "left_drive1");
+        leftDrive2  = hardwareMap.get(DcMotor.class, "left_drive2");
+        rightDrive1 = hardwareMap.get(DcMotor.class, "right_drive1");
+        rightDrive2 = hardwareMap.get(DcMotor.class, "right_drive2");
+
+        leftDrive1.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive2.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive1.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive2.setDirection(DcMotor.Direction.FORWARD);
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+            // Setup a variable for each drive wheel to save power level for telemetry
+            double leftPower;
+            double rightPower;
+
+            // Przypisanie silnika do pada
+            leftPower    = -gamepad1.left_stick_y;
+            rightPower   = -gamepad1.right_stick_y;
+
+            // Clip the power values so they never exceed +/- 1
+            leftPower    = Range.clip(leftPower, -1.0, 1.0);
+            rightPower   = Range.clip(rightPower, -1.0, 1.0);
+
+            // Send calculated power to wheels
+            leftDrive1.setPower(leftPower);
+            leftDrive2.setPower(leftPower);
+            rightDrive1.setPower(rightPower);
+            rightDrive2.setPower(rightPower);
+
+            // PRoste wyswietlanie kierunku za pomoca if i else
+            if (leftPower > 0 && rightPower > 0) {
+                telemetry.addData("Kierunek", "⬆️");
+            } else if (leftPower < 0 && rightPower < 0) {
+                telemetry.addData("Kierunek", "⬇️");
+            } else if (leftPower > 0 && rightPower < 0) {
+                telemetry.addData("Kierunek", "➡️");
+            } else if (leftPower < 0 && rightPower > 0) {
+                telemetry.addData("Kierunek", "⬅️");
+            } else if (leftPower == 0 && rightPower > 0) {
+                telemetry.addData("Kierunek", "↗️");
+            } else if (leftPower == 0 && rightPower < 0) {
+                telemetry.addData("Kierunek", "↖️");
+            } else if (leftPower > 0 && rightPower == 0) {
+                telemetry.addData("Kierunek", "↖️");
+            } else if (leftPower < 0 && rightPower == 0) {
+                telemetry.addData("Kierunek", "↗️");
+            } else {
+                telemetry.addData("Kierunek", "🛑");
+            }
+             telemetry.addData("Status", "Run Time: " + runtime.toString());
+             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+             telemetry.update();
+        }
+    }
+}
+
